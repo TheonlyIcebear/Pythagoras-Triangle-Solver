@@ -26,7 +26,8 @@ class Solver:
                 if not var in triangle:
                     temp[var] = side
 
-            print(triangle)
+            temp.update(triangle)
+            print({key: value for key, value in sorted(temp.items())})
 
         for var in ['a', 'b', 'c']:
             if not var in triangle:
