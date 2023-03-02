@@ -19,8 +19,20 @@ class Solver:
                 triangle = curr
                 triangle['b'] = side
 
-            print(triangle)
             side = self.solve(triangle)
+            
+            temp = {}
+            for var in ['a', 'b', 'c']:
+                if not var in triangle:
+                    temp[var] = side
+
+            print(triangle)
+
+        for var in ['a', 'b', 'c']:
+            if not var in triangle:
+              triangle[var] = side
+
+        print('Triangle: ', triangle)
 
             
                 
@@ -37,7 +49,6 @@ class Solver:
         else:
             side = ((c**2)-(a**2))**0.5
             
-        print(side)
         return side
 
 if __name__ == "__main__":
