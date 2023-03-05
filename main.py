@@ -1,3 +1,4 @@
+from decimal import Decimal as D
 import json
 
 class Solver:
@@ -7,33 +8,41 @@ class Solver:
 
 
         triangle = triangles[0]
-        side = self.solve(triangle)
+        triangle['b'] **= 2 
 
+        places = [str(side)[::-1].find('.') for side in triangle.values() ]
+        side = round(self.solve(triangle), max(places)+1 if max(places) > 0 else 0)
+
+        print(side)
+      
         for curr in triangles:
+
+            temp = dict(curr)
 
             if 'c' in curr:
                 triangle = curr
                 triangle['a'] = side
+                temp['a'] = f'sqrt({side})'
 
             else:
                 triangle = curr
                 triangle['b'] = side
+                temp['b'] = f'sqrt({side})'
 
-            side = self.solve(triangle)
+            places = [str(side)[::-1].find('.') for side in triangle.values() ]
+            side = round(self.solve(triangle), max(places)+1 if max(places) > 0 else 0)
             
-            temp = {}
             for var in ['a', 'b', 'c']:
                 if not var in triangle:
-                    temp[var] = side
+                    temp[var] = f'sqrt({float(side)})'
 
-            temp.update(triangle)
             print({key: value for key, value in sorted(temp.items())})
 
         for var in ['a', 'b', 'c']:
             if not var in triangle:
-              triangle[var] = side
+              triangle[var] = f'sqrt({side})'
 
-        print('Triangle: ', triangle)
+        print('Triangle: ', temp)
 
             
                 
@@ -45,10 +54,10 @@ class Solver:
         b = sides.get('b')
         c = sides.get('c')
         if not 'c' in sides:
-            side = ((a**2)+(b**2))**0.5
+            side = float((D(a)**D(2))+D(b))
 
         else:
-            side = ((c**2)-(a**2))**0.5
+            side = float((D(c)**D(2))-D(a))
             
         return side
 
