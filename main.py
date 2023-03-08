@@ -5,59 +5,64 @@ class Solver:
     def __init__(self):
         data = json.load(open('data.json', 'r+'))
         triangles = data['triangles']
+        frac = self.frac
 
 
         triangle = triangles[0]
-        triangle['b'] **= 2 
 
-        places = [str(side)[::-1].find('.') for side in triangle.values() ]
-        side = round(self.solve(triangle), max(places)+1 if max(places) > 0 else 0)
+        if not 'c' in triangle:
+            triangle['b'] = frac(triangle['b']) ** frac(2)
+            given = triangle['b']
+        else:
+            triangle['a'] = frac(triangle['a']) ** frac(2)
+            given = triangle['a']
 
-        print(side)
-      
-        for curr in triangles:
+        side = self.solve(triangle, given)
 
-            temp = dict(curr)
+        
+ 
 
-            if 'c' in curr:
-                triangle = curr
-                triangle['a'] = side
-                temp['a'] = f'sqrt({side})'
+        for triangle in triangles[1:]:
 
-            else:
-                triangle = curr
-                triangle['b'] = side
-                temp['b'] = f'sqrt({side})'
+            temp = dict(triangle)
 
-            places = [str(side)[::-1].find('.') for side in triangle.values() ]
-            side = round(self.solve(triangle), max(places)+1 if max(places) > 0 else 0)
-            
-            for var in ['a', 'b', 'c']:
-                if not var in triangle:
-                    temp[var] = f'sqrt({float(side)})'
+            for key in triangle.keys():
+                if not triangle[key]:
+                    triangle[key] = side
+                    temp[key] = f"sqrt('{side}')"
+                else:
+                    given = side
 
-            print({key: value for key, value in sorted(temp.items())})
+            side = self.solve(triangle, given)
 
-        for var in ['a', 'b', 'c']:
-            if not var in triangle:
-              triangle[var] = f'sqrt({side})'
+            for key in ['a', 'b', 'c']:
+                if not key in triangle:
+                    temp[key] = f"sqrt('{side}')"
 
-        print('Triangle: ', temp)
+            temp = { key:value for (key, value) in sorted(temp.items())}
 
-            
+            print(temp)
                 
 
+    def frac(self, num):
+        return D(str(num))
 
+    def solve(self, sides, given):
+        frac = self.frac
 
-    def solve(self, sides):
+        for key in sides.keys():
+            if sides[key] != given:
+                sides[key] = frac(sides[key]) ** frac(2)
+
         a = sides.get('a')
         b = sides.get('b')
         c = sides.get('c')
-        if not 'c' in sides:
-            side = float((D(a)**D(2))+D(b))
+
+        if not c:
+            side = float( a + frac(b) )
 
         else:
-            side = float((D(c)**D(2))-D(a))
+            side = float(( frac(c)) - frac(a))
             
         return side
 
